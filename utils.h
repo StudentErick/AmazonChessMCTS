@@ -20,19 +20,17 @@ struct Pos {
 };
 // 步法信息
 struct ChessMove {
-  Pos From;          // 起点坐标
-  Pos To;            // 终点坐标
-  Pos Bar;           // 障碍坐标
-  int ChessID;       // 棋子的类型
-  int n_visited;     // 结点访问的次数
-  double v;          // 该节点子树所有结果的平均值
-  double prob;       // 结点胜率
-  bool is_expanded;  // 是否扩展了标记
-  ChessMove() {
-    n_visited = 0;
-    v = 0.0;
-    is_expanded = false;
-    ChessID = BLACK;
+  Pos From;     // 起点坐标
+  Pos To;       // 终点坐标
+  Pos Bar;      // 障碍坐标
+  int ChessID;  // 棋子的类型
+  ChessMove() {}
+  ChessMove(const ChessMove& move) {
+    From.x = move.From.x;
+    From.y = move.From.y;
+    To.x = move.To.x;
+    To.y = move.To.y;
+    ChessID = move.ChessID;
   }
 };
 
