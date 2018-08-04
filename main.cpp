@@ -1,6 +1,5 @@
-#include <algorithm>
-#include <iostream>
-#include <queue>
+#include <bits/stdc++.h>
+
 #include "utils.h"
 using namespace std;
 
@@ -42,12 +41,15 @@ void initBoard(int Board[10][10]) {
   Board[9][6] = BLACK;
 }
 
-int main() {
-  /*
-vector<int> v({1, 2, 3, 4, 5});
-for (auto &i : v) {
-  cout << i << endl;
+void test(int A[10][10]) {
+  int(*p)[10] = A;
+  cout << p[0][0] << endl;
 }
-*/
+
+int main() {
+  int a[10][10];  // = {1, 2};
+  int(*p)[10] = a;
+  cout << sizeof(p) << endl;
+  cout << sizeof(a) << endl;
   return 0;
 }
