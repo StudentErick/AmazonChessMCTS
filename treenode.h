@@ -6,43 +6,36 @@
 #include <queue>
 #include <random>
 #include <vector>
-#include "gamestate.h"
 #include "utils.h"
 
 class TreeNode {
  public:
   TreeNode();
-  TreeNode(const ChessMove& move, std::shared_ptr<TreeNode> par, int side,
-           double childValue = 0.0, double puct = 1.0 / sqrt(2.0));
-  std::shared_ptr<const TreeNode> getBestChild() const;
-  void update(double res);
-  void fullExpand();
-  inline double getUCTValue() const { return m_uctValue; }
-  inline int getVisitedCount() const { return n_visits; }
-  inline std::shared_ptr<const TreeNode> getParent() const {
-    return m_parent.lock();
-  }
-  inline bool isLeafNode() const { return isLeaf; }
+  TreeNode(const ChessMove& move, std::shared_ptr<TreeNode> parent, double c);
+  void AddChild();                           // 扩展孩子节点
+  std::weak_ptr<TreeNode> SelectBestChid();  // 选择最佳的孩子
+  void expandNode();
+  void update(int z);
 
- protected:
-  double m_uctValue;
-  struct cmp {
-    bool operator()(TreeNode* m1, TreeNode* m2) {
-      return m1->n_visits < m2->n_visits;
-    }
-  };
-  bool isLeaf;
-  GameState m_GameState;
-  ChessMove curMove;                       // 获取父节点给的move
-  std::weak_ptr<const TreeNode> m_parent;  // 父节点指针
-  int n_visits;                            // 当前结点访问的次数
-  double m_ChildValue;  // 孩子结点的评估值之和，如果是叶子结点就直接是1或者0
-  double m_puct;  // 常数
-  std::vector<std::shared_ptr<TreeNode>> m_ChildNodes;
-  std::priority_queue<std::shared_ptr<TreeNode>,
-                      std::vector<std::shared_ptr<TreeNode>>, cmp>
-      QMoveQueue;
-  int m_side;
+  int getSide() const { return side; }
+  int getVisitedNum() const { return nVisit; }
+  double getScore() const { return eval; }
+  std::weak_ptr<const TreeNode> getParent() { return mParent.lock(); }
+  bool isLeaf() const { return is_Leaf; }
+  bool isFullNode() const { return is_full_expanded; }
+
+ private:
+  std::weak_ptr<const TreeNode> mParent;               // 父节点
+  std::vector<std::shared_ptr<TreeNode>> mChildNodes;  // 孩子结点
+  std::vector<ChessMove> UnTriedMove;                  // 未访问的结点
+  ChessMove curMove;      // 父节点传入的步法
+  double Qsa;             // 评估数据
+  double eval;            // 最终评估值
+  bool is_Leaf;           // 叶子结点的标记
+  int side;               // 当前的走子方
+  bool is_full_expanded;  // 完全展开
+  int nVisit;             // 访问的次数
+  double nConst;          // 常数
 };
 
 #endif  // TREENODE_H

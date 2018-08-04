@@ -5,13 +5,9 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     uct.cpp \
-    movegenerator.cpp \
-    treenode.cpp \
-    gamestate.cpp
+    treenode.cpp
 
 HEADERS += \
     utils.h \
     uct.h \
-    movegenerator.h \
-    treenode.h \
-    gamestate.h
+    treenode.h

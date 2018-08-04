@@ -2,44 +2,67 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include "utils.h"
 
 TreeNode::TreeNode() {
-  m_puct = 1.0 / sqrt(2.0);
-  m_ChildValue = 0.0;
-  isLeaf = false;
+  is_Leaf = false;
+  Qsa = 0.0;
+  nVisit = 0;
+  nConst = 1 / sqrt(2.0);
+  eval = 0.0;
+  side = BLACK;
+  is_full_expanded = false;
 }
 
-TreeNode::TreeNode(const ChessMove &move, std::shared_ptr<TreeNode> par,
-                   int _side, double childValue, double puct)
-    : m_GameState(par->m_GameState),
-      curMove(move),
-      m_parent(par),
-      m_ChildValue(childValue),
-      m_puct(puct),
-      m_side(_side) {
-  isLeaf = false;
+TreeNode::TreeNode(const ChessMove& move, std::shared_ptr<TreeNode> parent,
+                   double c)
+    : mParent(parent), curMove(move), nConst(c) {
+  side = -3 - parent->getSide();
+  nVisit = 1;
+  Qsa = 0;
+  eval = 0.0;
+  is_full_expanded = false;
 }
 
-std::shared_ptr<const TreeNode> TreeNode::getBestChild() const {
-  auto p = QMoveQueue.top();
-  return p;
-}
-
-void TreeNode::update(double res) {
-  ++n_visits;
-  m_ChildValue += res;
-  auto par = m_parent.lock();
-  m_uctValue = m_ChildValue / n_visits +
-               m_puct * sqrt(2.0 * par->getVisitedCount() / n_visits);
-}
-
-void TreeNode::fullExpand() {
-  m_GameState.DoMove(curMove);
-  int flag = m_GameState.IsGameOver(m_side);
-  if (flag != -1) {
-    isLeaf = true;
-    m_uctValue = static_cast<double>(flag);
+void TreeNode::AddChild() {
+  if (is_full_expanded) {
+    return;
   }
-  std::vector<ChessMove> move;
-  // m_GameState.CreatePossibleMove(m_side, )
+
+  // 增加孩子结点，注意使用指针的动态转换
+  auto p = std::shared_ptr<TreeNode>(this);
+  mChildNodes.push_back(std::make_shared<TreeNode>(UnTriedMove[0], p, nConst));
+
+  // 清除原来的孩子结点
+  UnTriedMove.erase(
+      std::remove(UnTriedMove.begin(), UnTriedMove.end(), UnTriedMove[0]));
+  if (UnTriedMove.size() <= 0) {
+    is_full_expanded = true;
+  }
+}
+
+void TreeNode::update(int z) {
+  ++nVisit;
+  Qsa += (z - Qsa) / nVisit;
+  double n = static_cast<double>(mParent.lock()->getVisitedNum());
+  // 公式是根据论文来的
+  if (side == BLACK) {
+    eval = Qsa + nConst * sqrt(log(n) / nVisit);
+  } else {
+    eval = Qsa - nConst * sqrt(log(n) / nVisit);
+  }
+}
+
+std::weak_ptr<TreeNode> TreeNode::SelectBestChid() {
+  double bestScore = mChildNodes[0]->getScore();
+  std::weak_ptr<TreeNode> bestChild = mChildNodes[0];
+  for (std::weak_ptr<TreeNode> p : mChildNodes) {
+    double s = p.lock()->getScore();
+    if (side == BLACK && bestScore > s) {
+      bestChild = p;
+    } else if (side == WHITE && bestScore < s) {
+      bestChild = p;
+    }
+  }
+  return bestChild;
 }

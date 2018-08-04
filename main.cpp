@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <iostream>
 #include <queue>
-#include "uct.h"
 #include "utils.h"
 using namespace std;
 
@@ -43,29 +42,12 @@ void initBoard(int Board[10][10]) {
   Board[9][6] = BLACK;
 }
 
-static int Board[10][10];
-
-class C {
- public:
-  C() {}
-  C(int a, int b) : a(a), b(b) {}
-  C(const C &tmp) {
-    a = tmp.a;
-    b = tmp.b;
-  }
-  void test() {}
-  int a, b;
-};
-
 int main() {
   /*
-initBoard(Board);
-showBoard(Board);
+vector<int> v({1, 2, 3, 4, 5});
+for (auto &i : v) {
+  cout << i << endl;
+}
 */
-  vector<C> v;
-  v.push_back(C(1, 1));
-  v.push_back(C(2, 2));
-  v.push_back(C(3, 3));
-  sort(v.begin(), v.end());
   return 0;
 }
