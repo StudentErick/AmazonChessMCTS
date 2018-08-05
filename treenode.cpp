@@ -43,7 +43,8 @@ std::shared_ptr<TreeNode> TreeNode::AddChild() {
   is_Leaf = false;
   // 增加孩子结点，注意使用指针的动态转换
   auto p = std::shared_ptr<TreeNode>(this);
-  mChildNodes.push_back(std::make_shared<TreeNode>(UnTriedMove[0], p, nConst));
+  mChildNodes.push_back(
+      std::make_shared<TreeNode>(UnTriedMove[0], p, nConst, Board));
 
   // 清除原来的孩子结点
   UnTriedMove.erase(

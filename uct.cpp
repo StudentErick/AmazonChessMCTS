@@ -3,7 +3,12 @@
 #include <ctime>
 #include <random>
 
-UCT::UCT() {}
+UCT::UCT(int limit) : limitTime(limit) {
+  startTime = 0;
+  curTime = 0;
+}
+
+UCT::~UCT() {}
 
 void UCT::UCTSearch(int board[10][10]) {
   memcpy(Board, board, 10 * 10 * sizeof(int));
@@ -11,8 +16,15 @@ void UCT::UCTSearch(int board[10][10]) {
     Root.reset();
   }
   Root = std::make_shared<TreeNode>(board);
-  auto p = Root->SelectBestChid();
-  MakeMove(p->getCurMove());  // 选择最佳的步法
+  ChessMove m;
+  std::time(&curTime);  // 搜索开始时间
+  while (curTime - startTime < limitTime) {
+    TreePolicy();  // TreePolicy中包含了Default操作
+    auto p = Root->SelectBestChid();
+    m = p->getCurMove();
+    std::time(&curTime);  // 获取当前系统时间
+  }
+  MakeMove(m);  // 选择最佳的步法
   memcpy(board, Board, 10 * 10 * sizeof(int));
 }
 
@@ -22,7 +34,7 @@ void UCT::TreePolicy() {
   while (res == -1) {
     if (p->isFullNode()) {
       auto t = p->AddChild();
-      res = DefaultPolicy(t);  // rollout
+      res = DefaultPolicy(t);  // rollout操作
       BackUp(t, res);
       break;
     }

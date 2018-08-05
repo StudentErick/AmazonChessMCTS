@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-
+#include "uct.h"
 #include "utils.h"
 using namespace std;
 
@@ -41,15 +41,12 @@ void initBoard(int Board[10][10]) {
   Board[9][6] = BLACK;
 }
 
-void test(int A[10][10]) {
-  int(*p)[10] = A;
-  cout << p[0][0] << endl;
-}
+static int Board[10][10];
 
 int main() {
-  int a[10][10];  // = {1, 2};
-  int(*p)[10] = a;
-  cout << sizeof(p) << endl;
-  cout << sizeof(a) << endl;
+  initBoard(Board);
+  UCT AI(3);
+  AI.UCTSearch(Board);
+  showBoard(Board);
   return 0;
 }
